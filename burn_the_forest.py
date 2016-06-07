@@ -100,6 +100,7 @@ class BurnTheForest:
 
     def next_step(self):
         new_to_burn = self.wind_range()
+        self.wind_power += 2
         for burning_ar in [a for a in sum(self.forest.forest, []) if a.fire > 10]:
             for areas in new_to_burn:
                 x = burning_ar.x + areas[0]
@@ -142,25 +143,31 @@ class BurnTheForest:
         df = self.prepare_data_to_draw()
         images.append([plt.pcolor(df, cmap=cmap, norm=norm)])
         drzewa = [sum([x.wood for x in sum(self.forest.forest, [])])]
+        ogien = [sum([x.fire for x in sum(self.forest.forest, [])])]
         for i in range(steps):
             print i
             self.next_step()
             self.burn()
             drzewa.append(sum([x.wood for x in sum(self.forest.forest, [])]))
+            ogien.append(sum([x.fire for x in sum(self.forest.forest, [])]))
             df = self.prepare_data_to_draw()
-            images.append([plt.pcolor(df, cmap=cmap, norm=norm)])
+            images.append([plt.pcolor(df, cmap=cmap, norm=norm,)])
 
-        animation.ArtistAnimation(fig, images, interval=500, repeat_delay=0, repeat=True)
+        ani = animation.ArtistAnimation(fig, images, interval=500, repeat_delay=0, repeat=True)
         plt.show()
 
         plt.plot(range(0, steps + 1), drzewa)
         plt.show()
 
+        plt.plot(range(0, steps + 1), ogien)
+        plt.show()
 
-def run(size=100, forest_density=0.80, humidity=None, square_size=100, wind_power=50, wind_direction='N',
-            steps=10, start_power=1):
+
+def run(size=100, forest_density=0.80, humidity=None, square_size=100, wind_power=0, wind_direction='N',
+            steps=80, start_power=1):
     if humidity is None:
         humidity = [0.0, 0.99]
     f = Forest(size=size, forest_density=forest_density, humidity=humidity, square_size=square_size)
     btf = BurnTheForest(f, wind_power=wind_power, wind_direction=wind_direction)
     btf.animate(steps=steps, start_fire_power=start_power)
+run()
